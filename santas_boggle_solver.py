@@ -9,41 +9,6 @@ through all the valid points on the boggle board. This boggle board works for an
 # loads the dictionary from the textfile "words.txt"
 file = open('words.txt', 'r')
 dictionary = []
-
-for word in file:
-    # loads all the valid words from the dictionary length >= 3 to be a valid word in boggle
-    if len(word) < 4:
-        continue
-    dictionary.append(word[:-1])
-
-# makes a trie out of all the words in the dictionary
-trie = TrieNode.Trie()
-trie.add(dictionary)
-
-print("                     |===| ")
-print("                    === ===")
-print("                  ===     ===")
-print("                ===         ===")
-print("              ===             ===")
-print("            ===                 ===")
-print("          ===                     ===")
-print("        ===                         ===")
-print("      ===                             ===")
-print("    ===                                 ===")
-print("  ===                                     ===")
-print("===                                         ===")
-print("====================WELCOME====================")
-print("||                                           ||")
-print("||        |==|                    |==|       ||")
-print("||                     ||                    ||")
-print("||                                           ||")
-print("||                                           ||")
-print("||           |____________________|          ||")
-print("|| |  / | \  |  \ |  /  \  \  \   /  |   |   ||")
-print("||  / / \ |  /  \ /  |  |  /  | /   \  |  /  ||")
-print("|| |\ / | /  |  \ |  /  \  \  \ / /  | \ |   ||")
-print("===============================================")
-
 print("\nThis is Santa's Boggle Solver for any M X M board!")
 
 b = 1
@@ -55,6 +20,26 @@ while b:
     else:
         b -= 1
 SIZE = int(SIZE)
+
+# if the size of the board is greater than 4, we will store
+# letters with that's at least 4 letters long in the dictionary
+# (rule of big boggle) only words that's at least 4 characters long will get you points
+# (rule of boggle)only words that's at least 3 characters long will get you points
+if SIZE > 4:
+    min_words = 4
+else:
+    min_words = 3
+for word in file:
+    # loads all the valid words from the dictionary to be at least 4 letters long to be a valid word in boggle
+    if len(word) <= min_words:
+        continue
+    dictionary.append(word[:-1])
+
+# makes a trie out of all the words in the dictionary
+trie = TrieNode.Trie()
+trie.add(dictionary)
+
+
 
 
 def get_input():
@@ -73,8 +58,6 @@ def get_input():
                     array = np.append(array, char.lower())
             row += 1
 
-        # else:
-        #     print("Invalid input. Remember that the input should be characters! Please try again.")
         else:
             print("Invalid input. Remember that is a 4x4 matrix! Enter", SIZE, "valid characters. Please try again.")
 
@@ -112,22 +95,18 @@ GRID = 3
 
 
 # Returns all the valid words that start at the given
-# i,j coordinate on the board
+# i,j coordinate on the board. Uses DFS.
 def find_word(i, j, matrix, curr_node):
     solutions = set()
 
-    # stack for depth-first search
     stack = [(i, j, curr_node.root, matrix)]
-    # push on the coordinates of the start letter
-    # along with the root of the trie
 
     while len(stack) > 0:
 
         curr_letter = stack.pop()
         curr_node = curr_letter[NODE]
 
-        # use a helper function to get all the letters to which our current
-        # letter is adjacent
+        # visits the letter that is adjacent to our current letter and stores it in the stack
         neighbors = find_neighbors(board, curr_letter[ROW], curr_letter[COL])
 
         # for each of these neighbors,
@@ -140,14 +119,13 @@ def find_word(i, j, matrix, curr_node):
 
             child = curr_node.get_child(board_copy[x][y])
 
-            # if there isn't a node in the dictionary trie suggesting that
-            # this letter is part of any word, we stop going down this path
-            # by not pushing these current coordinates onto the stack
+            # if there isn't a node in the dictionary trie, then we skip it because we know that
+            # it won't form a valid word
             if not child:
                 continue
 
-            if child.complete:
-                solutions.add(child.complete)
+            if child.valid:
+                solutions.add(child.valid)
 
             # essentially marks the node we just visited as visited
             board_copy[x][y] = None
@@ -221,6 +199,7 @@ def print_results(res):
     rank = 1
     # prints the list in based on the words that will score you the most points
     # more letters means more points in the boggle game
+    print("HO HO HO! Santa found", len(res),"words")
     for string in sorted(res, key=len, reverse=True):
         print(rank, ") ", string, sep="")
         rank += 1
