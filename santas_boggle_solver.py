@@ -40,9 +40,7 @@ trie = TrieNode.Trie()
 trie.add(dictionary)
 
 
-
-
-def get_input():
+def get_input() -> np.array:
     array = np.empty([0, 0])
     row = 1
     while row < SIZE + 1:
@@ -68,7 +66,7 @@ def get_input():
 
 # Takes in a boggle board and returns the set
 # of valid words on that boggle board
-def solve_boggle(matrix, curr_node=trie):
+def solve_boggle(matrix: list, curr_node=trie) -> set:
     # # verifies that the input board is a valid N x M array
     # if not check_valid_matrix(board):
     # 	return ["invalid board"]
@@ -96,7 +94,7 @@ GRID = 3
 
 # Returns all the valid words that start at the given
 # i,j coordinate on the board. Uses DFS.
-def find_word(i, j, matrix, curr_node):
+def find_word(i: int, j: int, matrix: list, curr_node: TrieNode) -> list:
     solutions = set()
 
     stack = [(i, j, curr_node.root, matrix)]
@@ -136,7 +134,7 @@ def find_word(i, j, matrix, curr_node):
 
 
 # Takes the current position of the matrix and pushes the coordinates of the neighbors onto the stack
-def find_neighbors(mat, i, j):
+def find_neighbors(mat: list, i: int, j: int) -> list:
     rows = len(mat)
     cols = len(mat[0])
 
@@ -160,7 +158,7 @@ def find_neighbors(mat, i, j):
 
 
 # checks if the matrix given is a valid M x M matrix
-def check_valid_matrix(mat):
+def check_valid_matrix(mat: list) -> bool:
     length = len(mat[0])
 
     for row in mat[1:]:
@@ -170,8 +168,7 @@ def check_valid_matrix(mat):
     return True
 
 
-def print_results(res):
-
+def print_results(res: set) -> None:
     print("                     |===| ")
     print("                    === ===")
     print("                  ===     ===")
@@ -199,7 +196,7 @@ def print_results(res):
     rank = 1
     # prints the list in based on the words that will score you the most points
     # more letters means more points in the boggle game
-    print("HO HO HO! Santa found", len(res),"words")
+    print("HO HO HO! Santa found", len(res), "words")
     for string in sorted(res, key=len, reverse=True):
         print(rank, ") ", string, sep="")
         rank += 1
